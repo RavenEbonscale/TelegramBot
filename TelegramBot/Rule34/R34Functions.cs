@@ -13,7 +13,7 @@ namespace TelegramBot.Rule34
 {
     public static class R34Functions
     {
-        internal static async Task r34search(string tag, Telegram.Bot.Args.MessageEventArgs message, Telegram.Bot.TelegramBotClient bot)
+        internal static async Task R34search(string tag, Telegram.Bot.Args.MessageEventArgs message, Telegram.Bot.TelegramBotClient bot)
         {
             string url = @$"https://rule34.xxx/index.php?page=dapi&s=post&q=index&tags={tag}";
 
@@ -34,9 +34,9 @@ namespace TelegramBot.Rule34
         public static async Task<List<(string urls, string ext)>> Deserializetion(this string url)
         {
 
-            HttpClient client = new HttpClient();
+            HttpClient client = new();
             // Desealize the XML file and put it into the e621 class
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+            HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
             HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
             var response = await responseMessage.Content.ReadAsStringAsync();
             //Has to be turned into an io stream so it can be used as an async
@@ -44,12 +44,12 @@ namespace TelegramBot.Rule34
 
             XElement xelement = XElement.Parse(response);
             IEnumerable<XElement> menus = xelement.Elements();
-            List<(string urls, string ext)> lewders = new List<(string urls, string ext)>();
+            List<(string urls, string ext)> lewders = new();
             foreach (XAttribute lewds in menus.Attributes("file_url"))
             {
                 string thing = lewds.Value;
-                Uri imageurl = new Uri(thing);
-                FileInfo fi = new FileInfo(imageurl.AbsolutePath);
+                Uri imageurl = new(thing);
+                FileInfo fi = new(imageurl.AbsolutePath);
                 string ext = fi.Extension;
                 lewders.Add((thing, ext));
             }
@@ -70,7 +70,7 @@ namespace TelegramBot.Rule34
             });
 
             Parallel.ForEach(urls.Take(10), url => { photos.Add(new InputMediaPhoto(new InputMedia(url.Convert2Memory(), Helper.RandomName()))); });
-
+            
             await bot.SendMediaGroupAsync(chatId: messagae.Message.Chat.Id, media: photos);
         }
     }

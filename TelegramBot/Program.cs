@@ -5,6 +5,8 @@ using Telegram.Bot;
 using Telegram.Bot.Args;
 using TelegramBot.E621Functions;
 using TelegramBot.Rule34;
+using TelegramBot.Msc;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TelegramBot
 {
@@ -12,10 +14,10 @@ namespace TelegramBot
     {
         private static TelegramBotClient bot;
         private static Api e621;
-        static void Main(string[] args)
+        static void Main()
         {
+            
             ApiKeys keys = new();
-
             e621 = new(keys.ApiKeyE621, keys.username, keys.useragent);
             bot = new TelegramBotClient(keys.ApiKeytele);
 
@@ -23,9 +25,10 @@ namespace TelegramBot
 
             Console.Title = me.Username;
             Console.WriteLine(me);
-
-
+            
+            //This is for polling Telegram messages
             bot.OnMessage += Dergmessage;
+            //This is how Inline works!!
             bot.OnInlineQuery += DergQueryAsync;
 
             bot.StartReceiving();
@@ -46,61 +49,62 @@ namespace TelegramBot
 
         private static async void Dergmessage(object sender, MessageEventArgs messagae)
         {
-            string check = messagae.Message.Type.ToString();
+           
+            Owo owo = new(messagae);
+                       
 
-            string Gayboi = messagae.Message.From.FirstName;
+            Console.WriteLine(owo.User);
 
-            string text = messagae.Message.Text;
-
-            Console.WriteLine(Gayboi);
-
-            if (check == "Text")
+            if (owo.Check == "Text")
             {
 
-                string command = messagae.Message.Text.Split(' ')[0];
+              
 
-                switch (command.ToLower())
+                switch (owo.Command)
                 {
                     case "/search":
-                        if (text.Split(" ").Length <= 1)
+                        if (owo.Text.Split(" ").Length <= 1)
                         {
-                            await bot.SendTextMessageAsync(messagae.Message.Chat.Id, "Please enter Your tags now~");
+                            await bot.SendTextMessageAsync(owo.Chat_id, "Please enter Your tags now~");
                             bot.OnMessage += E621Search;
                         }
-                        else { await E621_Functions.SendImageAsync(e621, text.Replace("/search", " ").Trim(), messagae, bot); }
+                        else { await E621_Functions.SendImageAsync(e621, owo.Text.Replace("/search", " ").Trim(), messagae, bot); }
 
                         break;
                     case "/getgroup":
-                        if (text.Split(" ").Length <= 1)
+                        if (owo.Text.Split(" ").Length <= 1)
                         {
-                            await bot.SendTextMessageAsync(messagae.Message.Chat.Id, "Please enter Your tags now~");
+                            await bot.SendTextMessageAsync(owo.Chat_id, "Please enter Your tags now~");
+                            
                             bot.OnMessage += E621GroupAsync;
                         }
                         else
                         {
-                            await E621_Functions.SendGroup(e621, text.Replace("/getgroup", " ").Trim(), messagae, bot);
+                            await E621_Functions.SendGroup(e621, owo.Text.Replace("/getgroup", " ").Trim(), messagae, bot);
                         }
                         break;
                     case "/r34search":
-                        if (text.Split(" ").Length <= 1)
+                        if (owo.Text.Split(" ").Length <= 1)
                         {
-                            await bot.SendTextMessageAsync(messagae.Message.Chat.Id, "Please enter Your tags now~");
+                            await bot.SendTextMessageAsync(owo.Chat_id, "Please enter Your tags now~");
+                            
                             bot.OnMessage += Rule34SearchAsync;
                         }
                         else
                         {
-                            await Rule34.R34Functions.r34search(text.Replace("/r34search", " ").Trim(), messagae, bot);
+                            await Rule34.R34Functions.R34search(owo.Text.Replace("/r34search", " ").Trim(), messagae, bot);
                         }
                         break;
                     case "/r34getgroup":
-                        if (text.Split(" ").Length <= 1)
+                        if (owo.Text.Split(" ").Length <= 1)
                         {
-                            await bot.SendTextMessageAsync(messagae.Message.Chat.Id, "Please enter Your tags now~");
+                            await bot.SendTextMessageAsync(owo.Chat_id, "Please enter Your tags now~");
+                            
                             bot.OnMessage += Rule34GetgrouphAsync;
                         }
                         else
                         {
-                            await R34Functions.R34GetGroup(text.Replace("/r34getgroup", " ").Trim(), messagae, bot);
+                            await R34Functions.R34GetGroup(owo.Text.Replace("/r34getgroup", " ").Trim(), messagae, bot);
                         }
                         break;
 
@@ -143,6 +147,7 @@ namespace TelegramBot
                 chatId: message.Message.Chat,
                 sticker: "CAACAgEAAxkBAAIDPF-nkCcsrKdDafNV1JoOONY55pLjAAIbAAMuHvUPFTQxeYJHEfceBA");
             }
+            //Break out of the event once a message has been read!!
             bot.OnMessage -= Rule34GetgrouphAsync;
 
         }
@@ -153,7 +158,7 @@ namespace TelegramBot
             string text = message.Message.Text;
             if (check == "Text")
             {
-                await R34Functions.r34search(text.Replace("/r34search", " ").Trim(), message, bot);
+                await R34Functions.R34search(text.Replace("/r34search", " ").Trim(), message, bot);
             }
             else
             {
@@ -161,6 +166,7 @@ namespace TelegramBot
                 chatId: message.Message.Chat,
                 sticker: "CAACAgEAAxkBAAIDPF-nkCcsrKdDafNV1JoOONY55pLjAAIbAAMuHvUPFTQxeYJHEfceBA");
             }
+            //Break out of the event once a message has been read!!
             bot.OnMessage -= Rule34SearchAsync;
 
         }
@@ -179,6 +185,7 @@ namespace TelegramBot
                 chatId: message.Message.Chat,
                 sticker: "CAACAgEAAxkBAAIDPF-nkCcsrKdDafNV1JoOONY55pLjAAIbAAMuHvUPFTQxeYJHEfceBA");
             }
+            //Break out of the event once a message has been read!!
             bot.OnMessage -= E621GroupAsync;
         }
 
@@ -197,6 +204,7 @@ namespace TelegramBot
              chatId: message.Message.Chat,
              sticker: "CAACAgEAAxkBAAIDPF-nkCcsrKdDafNV1JoOONY55pLjAAIbAAMuHvUPFTQxeYJHEfceBA");
             }
+            //Break out of the event once a message has been read!!
             bot.OnMessage -= E621Search;
         }
     }

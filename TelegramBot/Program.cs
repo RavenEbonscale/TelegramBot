@@ -143,6 +143,8 @@ namespace TelegramBot
                 chatId: message.Message.Chat,
                 sticker: "CAACAgEAAxkBAAIDPF-nkCcsrKdDafNV1JoOONY55pLjAAIbAAMuHvUPFTQxeYJHEfceBA");
             }
+            bot.OnMessage -= Rule34GetgrouphAsync;
+
         }
 
         private static async void Rule34SearchAsync(object sender, MessageEventArgs message)
@@ -151,7 +153,7 @@ namespace TelegramBot
             string text = message.Message.Text;
             if (check == "Text")
             {
-                await Rule34.R34Functions.r34search(text.Replace("/r34search", " ").Trim(), message, bot);
+                await R34Functions.r34search(text.Replace("/r34search", " ").Trim(), message, bot);
             }
             else
             {
@@ -159,6 +161,8 @@ namespace TelegramBot
                 chatId: message.Message.Chat,
                 sticker: "CAACAgEAAxkBAAIDPF-nkCcsrKdDafNV1JoOONY55pLjAAIbAAMuHvUPFTQxeYJHEfceBA");
             }
+            bot.OnMessage -= Rule34SearchAsync;
+
         }
 
         private static async void E621GroupAsync(object sender, MessageEventArgs message)
@@ -175,6 +179,7 @@ namespace TelegramBot
                 chatId: message.Message.Chat,
                 sticker: "CAACAgEAAxkBAAIDPF-nkCcsrKdDafNV1JoOONY55pLjAAIbAAMuHvUPFTQxeYJHEfceBA");
             }
+            bot.OnMessage -= E621GroupAsync;
         }
 
         private static async void E621Search(object sender, MessageEventArgs message)
@@ -192,6 +197,7 @@ namespace TelegramBot
              chatId: message.Message.Chat,
              sticker: "CAACAgEAAxkBAAIDPF-nkCcsrKdDafNV1JoOONY55pLjAAIbAAMuHvUPFTQxeYJHEfceBA");
             }
+            bot.OnMessage -= E621Search;
         }
     }
 }

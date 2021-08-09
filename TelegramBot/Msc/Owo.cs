@@ -14,7 +14,14 @@ namespace TelegramBot.Msc
             this.Chat_id = message.Message.Chat.Id;
             this.User = message.Message.Chat.FirstName;
             this.Text = message.Message.Text;
-            this.Command = message.Message.Text.Split(' ')[0].ToLower();
+            if (Text != null)
+            {
+                this.Command = message.Message.Text.Split(' ')[0];
+            }
+            else 
+            {
+                this.Command = null;
+            }
             this.Check= message.Message.Type.ToString();
 
 

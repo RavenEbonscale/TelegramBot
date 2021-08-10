@@ -1,5 +1,6 @@
 ﻿using E621_Wrapper;
 using System;
+using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using TelegramBot.E621Functions;
@@ -31,8 +32,6 @@ namespace TelegramBot.Pooling
             if (owo.Check == "Text")
             {
                 
-
-
                 switch (owo.Command)
                 {
                     case "/search":
@@ -80,6 +79,18 @@ namespace TelegramBot.Pooling
                             await R34Functions.R34GetGroup(owo.Text.Replace("/r34getgroup", " ").Trim(), messagae, Bot);
                         }
                         break;
+                    case "/getcomic":
+                        if (owo.Text.Split(" ").Length <= 1)
+                        {
+                            await Bot.SendTextMessageAsync(owo.Chat_id, "Please enter Your tags now~");
+
+                            Bot.OnMessage +=  GetComicAsync;
+                        }
+                        else
+                        {
+                            await E621_Functions.SendComic(E621,messagae.Message.Text.Replace("/getcomic",""),messagae,Bot);
+                        }
+                        break;
 
                     default:
 
@@ -96,10 +107,24 @@ namespace TelegramBot.Pooling
             }
 
         }
-       
-        
-        
 
+        private async void GetComicAsync(object sender, MessageEventArgs message)
+        {
+            string check = message.Message.Type.ToString();
+            string text = message.Message.Text;
+            if (check == "Text")
+            {
+                await E621_Functions.SendComic(E621, text.Replace("/getcomic", " ").Trim(), message, Bot);
+            }
+            else
+            {
+                await Bot.SendStickerAsync(
+                chatId: message.Message.Chat.Id,
+                sticker: "CAACAgEAAxkBAAIDPF-nkCcsrKdDafNV1JoOONY55pLjAAIbAAMuHvUPFTQxeYJHEfceBA");
+            }
+            //Break out of the event once a message has been read!!
+            Bot.OnMessage -= GetComicAsync;
+        }
 
         internal async void DergQueryAsync(object sender, InlineQueryEventArgs message)
         {

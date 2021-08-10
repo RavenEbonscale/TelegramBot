@@ -102,7 +102,40 @@ namespace TelegramBot.E621Functions
  
             }
         }
+        
 
+
+        internal static async Task SendComic(Api e621,string tags,MessageEventArgs message,TelegramBotClient bot) 
+        {
+            List<InputMediaPhoto> photos = new();
+            List<E621pools> Pool = await e621.Get_Pool(tags);
+            IEnumerable<int> list = Pool[0].post_ids.Reverse().Take(10);
+
+            List<string> urls = new();
+           
+                Parallel.ForEach( list.AsParallel().AsOrdered(), async post_id => 
+            {
+                Singlepost Post = await e621.Get_Id(post_id);
+                string url = Post.post.file.url;
+                lock (lockMe) 
+                {
+                    urls.Add(url);
+                    photos.Add(new InputMediaPhoto(new InputMedia(content: url.Convert2Memory(), fileName: Helper.RandomName())));
+           
+                }
+
+
+
+            });
+            if (urls.Count > 0)
+            {
+                await bot.SendMediaGroupAsync(chatId: message.Message.Chat.Id, media: photos);
+            }
+            else
+            {
+
+            }
+        }
         
     }
 }

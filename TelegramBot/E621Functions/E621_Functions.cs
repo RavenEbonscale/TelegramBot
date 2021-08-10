@@ -13,7 +13,7 @@ namespace TelegramBot.E621Functions
     {
         private static readonly object lockMe = new();
 
-        internal static async Task SendImageAsync(Api e621, string tags, Telegram.Bot.Args.MessageEventArgs messagae, TelegramBotClient bot)
+        internal static async Task SendImageAsync(Api e621, string tags, MessageEventArgs messagae, TelegramBotClient bot)
         {
 
 
@@ -82,7 +82,7 @@ namespace TelegramBot.E621Functions
                 }
             });
 
-            await bot.AnswerInlineQueryAsync(message.InlineQuery.Id, results, isPersonal: true, cacheTime: 0);
+            await bot.AnswerInlineQueryAsync(message.InlineQuery.Id, results, isPersonal: true, cacheTime: 5);
         }
 
         internal static async Task SendGroup(Api e621, string tags, MessageEventArgs messagae, TelegramBotClient bot)
@@ -102,5 +102,7 @@ namespace TelegramBot.E621Functions
  
             }
         }
+
+        
     }
 }

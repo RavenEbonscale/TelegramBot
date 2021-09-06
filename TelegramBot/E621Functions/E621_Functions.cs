@@ -1,9 +1,11 @@
 ﻿using E621_Wrapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Args;
+using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.InlineQueryResults;
 
@@ -39,7 +41,7 @@ namespace TelegramBot.E621Functions
                 Parallel.ForEach(response.posts, post =>
                 {
 
-                    int SizeinMb = ((int)(post.file.size / 1e+6));
+                    int SizeinMb = (int)(post.file.size / 1e+6);
                     if (post.file.url != null & SizeinMb < 5)
                     {
                         lock (lockMe)
@@ -57,7 +59,7 @@ namespace TelegramBot.E621Functions
         {
             List<InlineQueryResultBase> results = new();
 
-            string tags = message.InlineQuery.Query.Taghelper();
+           string tags = message.InlineQuery.Query.Taghelper();
 
             List<E621json> response = e621.Get_Posts(tags, 2);
 
@@ -81,8 +83,14 @@ namespace TelegramBot.E621Functions
 
                 }
             });
-
-            await bot.AnswerInlineQueryAsync(message.InlineQuery.Id, results, isPersonal: true, cacheTime: 5);
+            try
+            {
+                await bot.AnswerInlineQueryAsync(message.InlineQuery.Id, results, isPersonal: true, cacheTime: 500);
+            }
+            catch (InvalidParameterException ex)
+            {
+                
+            }
         }
 
         internal static async Task SendGroup(Api e621, string tags, MessageEventArgs messagae, TelegramBotClient bot)

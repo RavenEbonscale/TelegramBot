@@ -44,20 +44,7 @@ namespace TelegramBot
 
         }
 
-
-      
-
-
-
-
-
-
-
-
         }
-
-
-
 
     }
 

@@ -73,5 +73,7 @@ namespace TelegramBot.Rule34
             
             await bot.SendMediaGroupAsync(chatId: messagae.Message.Chat.Id, media: photos);
         }
+
+
     }
 }

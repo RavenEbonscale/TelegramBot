@@ -129,8 +129,9 @@ namespace TelegramBot.Pooling
         internal async void DergQueryAsync(object sender, InlineQueryEventArgs message)
         {
 
-            await E621_Functions.Inline(E621, message, Bot);
-
+                await E621_Functions.Inline(E621, message, Bot);
+            
+ 
 
         }
         

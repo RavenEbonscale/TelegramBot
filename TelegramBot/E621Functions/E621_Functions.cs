@@ -7,6 +7,7 @@ using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InlineQueryResults;
 
 namespace TelegramBot.E621Functions
@@ -32,7 +33,7 @@ namespace TelegramBot.E621Functions
 
         }
 
-        private static List<string> GetUrls(List<E621json> responses)
+        private static List<string> GetUrls(List<E621json> responses, bool ani = false)
         {
             List<string> urls = new();
             foreach (var response in responses)
@@ -42,13 +43,20 @@ namespace TelegramBot.E621Functions
                 {
 
                     int SizeinMb = (int)(post.file.size / 1e+6);
-                    if (post.file.url != null & SizeinMb < 5)
+                    if (post.file.url != null & SizeinMb <= 3)
                     {
+                        Console.WriteLine(SizeinMb);
+                        if(!((string)post.file.ext == ".webm")&!((string)post.file.ext == "webm")&!((string)post.file.ext == "gif")&!((string)post.file.ext == "gif"))
                         lock (lockMe)
                         {
+                                //Console.WriteLine($"passed {post.file.ext}");
                             urls.Add(post.file.url);
                         }
+                        else {
+                                //Console.WriteLine($"Failed: {post.file.ext}");
+                        }
                     }
+              
 
                 });
             }
@@ -86,8 +94,9 @@ namespace TelegramBot.E621Functions
             try
             {
                 await bot.AnswerInlineQueryAsync(message.InlineQuery.Id, results, isPersonal: true, cacheTime: 500);
+                Console.WriteLine($"Sent to: {message.InlineQuery.From.FirstName}");
             }
-            catch (InvalidParameterException ex)
+            catch (InvalidParameterException)
             {
                 
             }
@@ -95,15 +104,37 @@ namespace TelegramBot.E621Functions
 
         internal static async Task SendGroup(Api e621, string tags, MessageEventArgs messagae, TelegramBotClient bot)
         {
+            await bot.SendChatActionAsync(chatId: messagae.Message.Chat.Id, chatAction: ChatAction.UploadPhoto);
+            Random rnd = new();
             List<InputMediaPhoto> photos = new();
+            List<string> slected = new();
 
-
-            List<E621json> responses = e621.Get_Posts(tags.Taghelper(), 2);
+            List<E621json> responses = e621.Get_Posts(tags.Taghelper(), 5);
+            
             List<string> urls = GetUrls(responses);
-            Parallel.ForEach(urls.Take(10), url => { photos.Add(new InputMediaPhoto(new InputMedia(url.Convert2Memory(), Helper.RandomName()))); });
-            if (urls.Count > 0)
+            List<string> urlRandomized =  urls.OrderBy(x => rnd.Next()).ToList(); 
+      
+            Parallel.ForEach(urlRandomized.Take(5), url => {
+                slected.Add(url);
+
+                photos.Add(new InputMediaPhoto(new InputMedia(url.Convert2Memory(), Helper.RandomName()))); });
+           
+                if(urls.Count > 0)
             {
-                await bot.SendMediaGroupAsync(chatId: messagae.Message.Chat.Id, media: photos);
+                try
+                {
+                   
+                    await bot.SendMediaGroupAsync(chatId: messagae.Message.Chat.Id, media: photos);
+                    
+                   
+                }
+                catch (ApiRequestException e)
+                {
+                    
+                    Console.WriteLine("Failed to send");
+                    photos.Clear();
+
+                }
             }
             else
             {
@@ -138,6 +169,7 @@ namespace TelegramBot.E621Functions
             if (urls.Count > 0)
             {
                 await bot.SendMediaGroupAsync(chatId: message.Message.Chat.Id, media: photos);
+                
             }
             else
             {

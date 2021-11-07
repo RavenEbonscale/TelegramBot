@@ -1,6 +1,5 @@
 ﻿using E621_Wrapper;
 using System;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using TelegramBot.E621Functions;
@@ -91,6 +90,18 @@ namespace TelegramBot.Pooling
                             await E621_Functions.SendComic(E621,messagae.Message.Text.Replace("/getcomic",""),messagae,Bot);
                         }
                         break;
+                    case "/reddit":
+                        if (owo.Text.Split(" ").Length <= 1) 
+                        {
+                            await Bot.SendTextMessageAsync(owo.Chat_id, "Please enter the Sub youd like");
+                            Bot.OnMessage += reddit;
+                        }
+                        else 
+                        {
+                            await Reddit.reddit.Grab_Reddit(Bot, messagae.Message.Text.Replace("/reddit", ""), messagae);
+                        }
+                        break;
+
 
                     default:
 
@@ -106,6 +117,24 @@ namespace TelegramBot.Pooling
                     sticker: "CAACAgEAAxkBAAIDPF-nkCcsrKdDafNV1JoOONY55pLjAAIbAAMuHvUPFTQxeYJHEfceBA");
             }
 
+        }
+
+        private async void reddit(object sender, MessageEventArgs message)
+        {
+            string check = message.Message.Type.ToString();
+            string text = message.Message.Text;
+            if (check == "Text")
+            {
+                await Reddit.reddit.Grab_Reddit(Bot, text, message);
+            }
+            else
+            {
+                await Bot.SendStickerAsync(
+                chatId: message.Message.Chat.Id,
+                sticker: "CAACAgEAAxkBAAIDPF-nkCcsrKdDafNV1JoOONY55pLjAAIbAAMuHvUPFTQxeYJHEfceBA");
+            }
+            //Break out of the event once a message has been read!!
+            Bot.OnMessage -= reddit;
         }
 
         private async void GetComicAsync(object sender, MessageEventArgs message)

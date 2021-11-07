@@ -17,9 +17,20 @@ namespace TelegramBot
         public static MemoryStream Convert2Memory(this string url)
         {
             using WebClient webClient = new();
+            
             byte[] imageBytes = webClient.DownloadData(url);
-            MemoryStream ms = new(imageBytes);
-            return ms;
+            int size = (int)(imageBytes.Length / 1e+6) ;
+            if (size<= 3)
+            {
+             
+                MemoryStream ms = new(imageBytes);
+                return ms;
+            }
+            { 
+                return null; 
+            }
+            
+
         }
 
         public static string Pick(this List<string> urls)

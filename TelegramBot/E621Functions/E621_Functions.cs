@@ -10,6 +10,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InlineQueryResults;
 
+
 namespace TelegramBot.E621Functions
 {
     public static class E621_Functions
@@ -36,6 +37,7 @@ namespace TelegramBot.E621Functions
         private static List<string> GetUrls(List<E621json> responses, bool ani = false)
         {
             List<string> urls = new();
+
             foreach (var response in responses)
             {
 
@@ -45,7 +47,8 @@ namespace TelegramBot.E621Functions
                     int SizeinMb = (int)(post.file.size / 1e+6);
                     if (post.file.url != null & SizeinMb <= 3)
                     {
-                        Console.WriteLine(SizeinMb);
+                       
+
                         if(!((string)post.file.ext == ".webm")&!((string)post.file.ext == "webm")&!((string)post.file.ext == "gif")&!((string)post.file.ext == "gif"))
                         lock (lockMe)
                         {
@@ -110,7 +113,6 @@ namespace TelegramBot.E621Functions
             List<string> slected = new();
 
             List<E621json> responses = e621.Get_Posts(tags.Taghelper(), 5);
-            
             List<string> urls = GetUrls(responses);
             List<string> urlRandomized =  urls.OrderBy(x => rnd.Next()).ToList(); 
       
@@ -120,7 +122,7 @@ namespace TelegramBot.E621Functions
                 photos.Add(new InputMediaPhoto(new InputMedia(url.Convert2Memory(), Helper.RandomName()))); });
            
                 if(urls.Count > 0)
-            {
+                {   
                 try
                 {
                    
@@ -148,7 +150,7 @@ namespace TelegramBot.E621Functions
         {
             List<InputMediaPhoto> photos = new();
             List<E621pools> Pool = await e621.Get_Pool(tags);
-            IEnumerable<int> list = Pool[0].post_ids.Reverse().Take(10);
+            IEnumerable<int> list = Pool[0].post_ids.Take(10);
 
             List<string> urls = new();
            

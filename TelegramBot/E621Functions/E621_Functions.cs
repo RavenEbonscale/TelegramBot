@@ -19,7 +19,7 @@ namespace TelegramBot.E621Functions
 
         internal static async Task SendImageAsync(Api e621, string tags, MessageEventArgs messagae, TelegramBotClient bot)
         {
-
+            
 
             List<E621json> responses = e621.Get_Posts(tags.Taghelper(), 2);
 
@@ -47,25 +47,54 @@ namespace TelegramBot.E621Functions
                     int SizeinMb = (int)(post.file.size / 1e+6);
                     if (post.file.url != null & SizeinMb <= 3)
                     {
-                       
 
-                        if(!((string)post.file.ext == ".webm")&!((string)post.file.ext == "webm")&!((string)post.file.ext == "gif")&!((string)post.file.ext == "gif"))
-                        lock (lockMe)
+                        if (ani == false){
+
+                            if (!((string)post.file.ext == ".webm") & !((string)post.file.ext == "webm") & !((string)post.file.ext == "gif") & !((string)post.file.ext == "gif"))
+                                lock (lockMe)
+                                {
+
+                                    urls.Add(post.file.url);
+                                }
+                            else
+                            {
+
+                            }
+
+                        }
+                        else 
                         {
-                                //Console.WriteLine($"passed {post.file.ext}");
-                            urls.Add(post.file.url);
+                            if (((string)post.file.ext == "gif") & ((string)post.file.ext == "gif")) 
+                            {
+                                urls.Add(post.file.url);
+                            }
+
+
                         }
-                        else {
-                                //Console.WriteLine($"Failed: {post.file.ext}");
-                        }
+
+
+                       
                     }
+                    
               
 
                 });
             }
             return urls;
         }
+        internal static async Task SendAnimatedAysnc(Api e621,string tags,MessageEventArgs message, TelegramBotClient bot) 
+        {
+            string taga = tags+"+animation";
+            List<E621json> responses = e621.Get_Posts(taga.Taghelper(), 2);
+            List<string> urls = GetUrls(responses,true);
+            if (urls.Count > 0)
+            {
 
+                //await bot.SendPhotoAsync(message.Message.Chat.Id, urls.Pick());
+                await bot.SendAnimationAsync(message.Message.Chat.Id, urls.Pick());
+                
+            }
+        }
         internal static async Task Inline(Api e621, InlineQueryEventArgs message, TelegramBotClient bot)
         {
             List<InlineQueryResultBase> results = new();
@@ -143,8 +172,6 @@ namespace TelegramBot.E621Functions
  
             }
         }
-        
-
 
         internal static async Task SendComic(Api e621,string tags,MessageEventArgs message,TelegramBotClient bot) 
         {

@@ -10,7 +10,7 @@ using Telegram.Bot.Args;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Reddit.Exceptions;
-using TelegramBot.Msc;
+
 namespace TelegramBot.Reddit
 {
    public static class reddit

@@ -100,6 +100,18 @@ namespace TelegramBot.Pooling
                         {
                             await Reddit.reddit.Grab_Reddit(Bot, messagae.Message.Text.Replace("/reddit", ""), messagae);
                         }
+
+                        break;
+                    case "/searcha":
+                        if(owo.Text.Split(" ").Length <= 1) 
+                        {
+                            await Bot.SendTextMessageAsync(owo.Chat_id, "Please enter Your tags now~");
+                            Bot.OnMessage += E621SearchA;
+                        }
+                        else 
+                        {
+                            await E621_Functions.SendAnimatedAysnc(E621, messagae.Message.Text.Replace("/searcha",""), messagae, Bot);
+                        }
                         break;
 
 
@@ -238,6 +250,24 @@ namespace TelegramBot.Pooling
             }
             //Break out of the event once a message has been read!!
             Bot.OnMessage -= E621Search;
+        }
+        private async void E621SearchA(object sender, MessageEventArgs message)
+        {
+            string check = message.Message.Type.ToString();
+            string text = message.Message.Text;
+            if (check == "Text")
+            {
+
+                await E621_Functions.SendImageAsync(E621, text, message, Bot);
+            }
+            else
+            {
+                await Bot.SendStickerAsync(
+             chatId: message.Message.Chat.Id,
+             sticker: "CAACAgEAAxkBAAIDPF-nkCcsrKdDafNV1JoOONY55pLjAAIbAAMuHvUPFTQxeYJHEfceBA");
+            }
+            //Break out of the event once a message has been read!!
+            Bot.OnMessage -= E621SearchA;
         }
     }
 }
